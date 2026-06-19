@@ -8,41 +8,65 @@ ChinaOpenDataIndex is a bilingual metadata validator and search tool for open-da
 
 - Build a bilingual index of public-data catalogs
 - Validate metadata records before import or publication
-- Search by keyword or exact category
+- Search by keyword, category, or lifecycle status
 - Track publisher, category, declared license, source page, and review date
-- Prepare a reviewable source inventory for downstream data projects
+- Detect duplicate record identifiers and malformed lifecycle metadata
+- Produce a catalog-level summary before publication
 
 ## Current capabilities
 
 - Validate stable record identifiers
 - Require Chinese-title and English-title fields
 - Require publisher, category, and declared-license metadata
+- Validate controlled category and status values
+- Require a replacement target for replacement records
+- Detect duplicate identifiers and duplicate tags
 - Read one JSON object per line
-- Search across record values
-- Filter by exact category
-- Report missing required fields
+- Search across titles, descriptions, publisher, category, and tags
+- Filter by category, status, and validation result
+- Summarize category counts, status counts, and invalid records
 - Run locally with no paid API
 
 ## Requirements
 
 - Python 3.10 or newer
 
-## Search by keyword
+## Search examples
 
 ```bash
 python main.py examples/catalog.jsonl --query transport
+python main.py examples/catalog.jsonl --category environment
+python main.py examples/catalog.jsonl --status reviewed
+python main.py examples/catalog.jsonl --valid-only
 ```
 
-## Filter by category
+## Catalog summary
 
 ```bash
-python main.py examples/catalog.jsonl --category environment
+python main.py examples/catalog.jsonl --summary
+```
+
+Example output:
+
+```json
+{
+  "records": 2,
+  "valid_records": 2,
+  "invalid_records": 0,
+  "categories": {
+    "environment": 1,
+    "transport": 1
+  },
+  "statuses": {
+    "unspecified": 2
+  }
+}
 ```
 
 ## Run tests
 
 ```bash
-python tests.py
+python -m unittest -v
 ```
 
 ## Required fields
@@ -69,16 +93,29 @@ Field names such as `name_zh` remain part of the public metadata contract. Repos
   "category": "transport",
   "license": "review-required",
   "source_url": "https://example.invalid/catalog/001",
-  "access_type": "download",
   "formats": ["csv", "json"],
-  "language": ["zh-CN"],
   "last_verified": "2026-06-19",
   "status": "draft",
+  "tags": ["transport", "routes"],
   "notes": "Synthetic metadata example"
 }
 ```
 
 The example domain is intentionally non-operational. Real records should preserve verifiable source evidence and review dates.
+
+## Controlled values
+
+Categories are defined in `docs/CATEGORY_VOCABULARY.md`.
+
+Supported lifecycle values:
+
+- `draft`
+- `reviewed`
+- `needs-update`
+- `historical`
+- `replacement`
+
+A record with `status: replacement` must provide `replacement_id`.
 
 ## Metadata principles
 
@@ -89,27 +126,13 @@ The example domain is intentionally non-operational. Real records should preserv
 - **Versioned**: record meaningful changes to availability, schema, and source terms.
 - **Reviewable**: preserve review dates, status changes, and replacement identifiers.
 
-## Verification workflow
-
-1. Open the publisher-controlled source page.
-2. Confirm the title and publisher.
-3. Record the source URL and access method.
-4. Record the displayed license or terms label exactly.
-5. Confirm that the repository record contains metadata only.
-6. Add the review date and status.
-7. Recheck periodically because links and terms can change.
-
-## Search behavior
-
-Keyword search is intended for discovery rather than semantic ranking. Exact-category filtering depends on a controlled category vocabulary. Add one primary category and use tags for secondary topics.
-
 ## Known limitations
 
 - Passing structural validation does not verify source authenticity or reuse rights.
 - The tool does not download source datasets.
 - The tool does not inspect changing website terms automatically.
-- Source-title translation may require human review.
-- Search does not rank synonyms or related concepts.
+- Search is substring based rather than semantic.
+- Controlled vocabularies are maintained in code and documentation rather than loaded dynamically.
 
 ## Documentation
 
