@@ -1,34 +1,34 @@
 # Category Vocabulary
 
-A controlled category vocabulary improves search, review, and downstream export.
+A controlled vocabulary improves search and review.
 
-## Initial categories
+## Categories
 
-| Identifier | English label | Chinese label | Scope |
-|---|---|---|---|
-| `economy` | Economy | 经济 | macroeconomics, industry, trade, business indicators |
-| `education` | Education | 教育 | schools, enrollment, examinations, learning resources |
-| `environment` | Environment | 环境 | air, water, emissions, weather observations, ecology |
-| `health` | Health | 健康 | public-health statistics and service metadata |
-| `population` | Population | 人口 | census, demographic, household, migration statistics |
-| `public-services` | Public Services | 公共服务 | administrative and community services |
-| `science` | Science and Technology | 科技 | research, patents, innovation, laboratories |
-| `transport` | Transport | 交通 | roads, transit, traffic, logistics, mobility |
-| `urban` | Urban Development | 城市建设 | planning, housing, infrastructure, land use |
-| `other` | Other | 其他 | records that cannot yet be classified reliably |
+| Identifier | Label | Scope |
+|---|---|---|
+| `economy` | Economy | industry, trade, and economic indicators |
+| `education` | Education | schools, enrollment, and learning resources |
+| `environment` | Environment | air, water, weather, and ecology |
+| `health` | Health | public-health and service metadata |
+| `population` | Population | census and demographic statistics |
+| `public-services` | Public Services | administrative and community services |
+| `science` | Science and Technology | research, patents, and innovation |
+| `transport` | Transport | roads, transit, traffic, and logistics |
+| `urban` | Urban Development | planning, housing, and infrastructure |
+| `other` | Other | records that do not fit another category |
 
 ## Assignment rules
 
-- Select one primary category based on the publisher's stated subject.
+- Select one primary category.
 - Use tags for secondary topics.
 - Do not create a new category for one record.
-- Use `other` temporarily when evidence is insufficient.
-- Record proposed vocabulary changes in a reviewed commit.
+- Use `other` when the correct category is not clear.
+- Record vocabulary changes in Git history.
 
 ## Versioning
 
-The vocabulary should gain a version identifier before automated validation depends on it. Renaming or merging identifiers requires migration notes because stored records may reference the previous values.
+Keep identifiers stable. A renamed or merged identifier requires migration notes for existing records.
 
-## Bilingual consistency
+## Display labels
 
-English and Chinese labels are display values. The identifier is the stable machine-readable value. Translations should be reviewed for domain meaning rather than translated word by word.
+Identifiers are machine-readable values. Applications may provide localized labels without changing stored identifiers.
