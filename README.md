@@ -1,49 +1,45 @@
 # ChinaOpenDataIndex
 
-A bilingual metadata validator and search tool for Chinese open-data catalogs.
+ChinaOpenDataIndex is a bilingual metadata validator and search tool for open-data catalogs published by Chinese public institutions and related organizations. The repository stores metadata records only; it does not download or redistribute source datasets.
 
-中文定位：面向中国公开数据目录的中英双语元数据索引、校验与检索工具。项目只保存数据集元数据，不抓取或重新分发原始数据内容。
-
-> Current status: metadata-focused MVP. A catalog entry is not automatically verified merely because it passes structural validation.
+> Status: metadata-focused MVP. Structural validation does not prove that a source is current, official, or reusable for a particular purpose.
 
 ## Use cases
 
-- Build a bilingual index of Chinese government and institutional open-data catalogs
-- Validate catalog records before publishing or importing them
-- Search metadata by keyword or exact category
-- Track publisher, category, license, and source evidence
-- Prepare a reviewable source inventory for downstream dataset projects
+- Build a bilingual index of public-data catalogs
+- Validate metadata records before import or publication
+- Search by keyword or exact category
+- Track publisher, category, declared license, source page, and review date
+- Prepare a reviewable source inventory for downstream data projects
 
 ## Current capabilities
 
-- Validate dataset IDs
-- Validate Chinese and English names
-- Require publisher, category, and license metadata
+- Validate stable record identifiers
+- Require Chinese-title and English-title fields
+- Require publisher, category, and declared-license metadata
 - Read one JSON object per line
-- Search by keyword
+- Search across record values
 - Filter by exact category
-- Store metadata only
-- Run locally without a paid API
+- Report missing required fields
+- Run locally with no paid API
 
-## Quick start
-
-### Requirements
+## Requirements
 
 - Python 3.10 or newer
 
-### Search by keyword
+## Search by keyword
 
 ```bash
-python main.py catalog.jsonl --query transit
+python main.py examples/catalog.jsonl --query transport
 ```
 
-### Filter by category
+## Filter by category
 
 ```bash
-python main.py catalog.jsonl --category transport
+python main.py examples/catalog.jsonl --category environment
 ```
 
-### Run tests
+## Run tests
 
 ```bash
 python tests.py
@@ -53,19 +49,21 @@ python tests.py
 
 | Field | Type | Description |
 |---|---|---|
-| `id` | string | Stable catalog record identifier |
-| `name_zh` | string | Chinese dataset name |
-| `name_en` | string | English dataset name |
-| `publisher` | string | Publishing organization |
-| `category` | string | Normalized category |
-| `license` | string | Declared license or access term |
+| `id` | string | stable catalog record identifier |
+| `name_zh` | string | source title in the Chinese-title field |
+| `name_en` | string | English display title |
+| `publisher` | string | publishing organization |
+| `category` | string | normalized category identifier |
+| `license` | string | declared license or access label |
 
-## Recommended extended fields
+Field names such as `name_zh` remain part of the public metadata contract. Repository prose and demonstration values are maintained in English.
+
+## Extended record example
 
 ```json
 {
   "id": "city-transport-001",
-  "name_zh": "公共交通线路元数据",
+  "name_zh": "Example source title for the Chinese-title field",
   "name_en": "Public Transit Route Metadata",
   "publisher": "Example Municipal Data Office",
   "category": "transport",
@@ -74,10 +72,9 @@ python tests.py
   "access_type": "download",
   "formats": ["csv", "json"],
   "language": ["zh-CN"],
-  "updated_at": "2026-06-01",
-  "verified_at": null,
-  "verification_status": "unverified",
-  "notes": "Metadata example only"
+  "last_verified": "2026-06-19",
+  "status": "draft",
+  "notes": "Synthetic metadata example"
 }
 ```
 
@@ -85,48 +82,43 @@ The example domain is intentionally non-operational. Real records should preserv
 
 ## Metadata principles
 
-- **Metadata only**: do not copy restricted source data into this repository.
-- **Evidence-based**: preserve the official catalog URL and review date.
-- **Bilingual but faithful**: English names should describe the source accurately, not add unsupported claims.
-- **License-aware**: distinguish declared terms from independently verified reuse rights.
-- **Versioned**: record meaningful changes to source availability, schema, and terms.
-- **Privacy-conscious**: avoid cataloging datasets that expose personal information without a clear lawful basis.
+- **Metadata only**: do not copy source datasets into this repository.
+- **Evidence based**: preserve the publisher-controlled source page when available.
+- **Faithful naming**: English titles should describe the source without adding unsupported claims.
+- **License aware**: keep declared labels separate from review conclusions.
+- **Versioned**: record meaningful changes to availability, schema, and source terms.
+- **Reviewable**: preserve review dates, status changes, and replacement identifiers.
 
-## Recommended verification workflow
+## Verification workflow
 
-1. Open the official publisher or catalog page.
-2. Confirm the dataset title and publisher.
+1. Open the publisher-controlled source page.
+2. Confirm the title and publisher.
 3. Record the source URL and access method.
-4. Review the stated license, terms, attribution, and redistribution conditions.
-5. Confirm that the record contains metadata only.
-6. Mark the verification date and reviewer status.
-7. Recheck periodically because links and terms may change.
+4. Record the displayed license or terms label exactly.
+5. Confirm that the repository record contains metadata only.
+6. Add the review date and status.
+7. Recheck periodically because links and terms can change.
 
 ## Search behavior
 
-Keyword search is intended for discovery, not semantic ranking. Exact-category filtering depends on a consistent category vocabulary. Contributors should normalize categories before adding records rather than creating near-duplicate labels.
+Keyword search is intended for discovery rather than semantic ranking. Exact-category filtering depends on a controlled category vocabulary. Add one primary category and use tags for secondary topics.
 
 ## Known limitations
 
-- Passing validation does not prove that a source is official, available, current, or commercially reusable.
+- Passing structural validation does not verify source authenticity or reuse rights.
 - The tool does not download source datasets.
-- The tool does not automatically inspect changing website terms.
-- English names may require human translation review.
-- License compatibility and database rights require separate analysis.
-- Search is intentionally lightweight and may not rank synonyms or related concepts.
+- The tool does not inspect changing website terms automatically.
+- Source-title translation may require human review.
+- Search does not rank synonyms or related concepts.
 
 ## Documentation
 
-- [Record format](docs/RECORD_FORMAT.md)
-- [Contribution process](docs/CONTRIBUTING_RECORDS.md)
-- [Category vocabulary](docs/CATEGORY_VOCABULARY.md)
-- [Source verification](docs/SOURCE_VERIFICATION.md)
+- [Record Format](docs/RECORD_FORMAT.md)
+- [Contribution Process](docs/CONTRIBUTING_RECORDS.md)
+- [Category Vocabulary](docs/CATEGORY_VOCABULARY.md)
+- [Source Verification](docs/SOURCE_VERIFICATION.md)
 - [Source Acceptance Policy](docs/SOURCE_ACCEPTANCE.md)
 - [Maintenance Trace](MAINTENANCE_TRACE.md)
-
-## Maintenance cycle 3
-
-The third portfolio maintenance cycle strengthens documentation discoverability and prepares the catalog for explicit lifecycle, review-template, and retirement-policy records. Changes remain visible as independent Git commits.
 
 ## License
 
