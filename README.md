@@ -117,8 +117,16 @@ Keyword search is intended for discovery, not semantic ranking. Exact-category f
 
 ## Documentation
 
+- [Record format](docs/RECORD_FORMAT.md)
+- [Contribution process](docs/CONTRIBUTING_RECORDS.md)
+- [Category vocabulary](docs/CATEGORY_VOCABULARY.md)
+- [Source verification](docs/SOURCE_VERIFICATION.md)
 - [Source Acceptance Policy](docs/SOURCE_ACCEPTANCE.md)
 - [Maintenance Trace](MAINTENANCE_TRACE.md)
+
+## Maintenance cycle 3
+
+The third portfolio maintenance cycle strengthens documentation discoverability and prepares the catalog for explicit lifecycle, review-template, and retirement-policy records. Changes remain visible as independent Git commits.
 
 ## License
 
