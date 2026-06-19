@@ -4,21 +4,24 @@ Bilingual metadata validation and search for Chinese open-data catalogs.
 
 ## MVP
 
-- Validate dataset names, publishers, categories, licenses, and source URLs
-- Track commercial-use review status
-- Search JSONL catalogs by keyword and category
-- Store metadata only; do not redistribute source datasets
+- Validate dataset IDs, bilingual names, publishers, categories, and licenses
+- Read one JSON object per line
+- Search by keyword and exact category
+- Store metadata only
 
 ## Run
 
 ```bash
-python main.py examples/catalog.jsonl --query transit --commercial review_required
+python main.py catalog.jsonl --query transit
+python main.py catalog.jsonl --category transport
 ```
+
+Required fields: `id`, `name_zh`, `name_en`, `publisher`, `category`, `license`.
 
 ## Test
 
 ```bash
-python -m unittest -v
+python tests.py
 ```
 
 ## License
