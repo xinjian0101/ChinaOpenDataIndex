@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 from collections import Counter
 from pathlib import Path
@@ -20,6 +21,20 @@ CATEGORY_VALUES = {
     "other",
 }
 STATUS_VALUES = {"draft", "reviewed", "needs-update", "historical", "replacement"}
+EXPORT_FIELDS = (
+    "id",
+    "name_zh",
+    "name_en",
+    "publisher",
+    "category",
+    "license",
+    "status",
+    "source_url",
+    "last_verified",
+    "tags",
+    "validation_status",
+    "issue_count",
+)
 
 
 def validate_entry(entry: dict) -> list[str]:
@@ -102,13 +117,95 @@ def catalog_summary(rows: list[dict]) -> dict:
     categories = Counter(item.get("category", "missing") for item in rows)
     statuses = Counter(item.get("status", "unspecified") for item in rows)
     invalid = sum(bool(item.get("_issues")) for item in rows)
+    issue_types = Counter(
+        issue.get("type", "unknown")
+        for item in rows
+        for issue in item.get("_issues", [])
+    )
     return {
         "records": len(rows),
         "valid_records": len(rows) - invalid,
         "invalid_records": invalid,
         "categories": dict(sorted(categories.items())),
         "statuses": dict(sorted(statuses.items())),
+        "issue_types": dict(sorted(issue_types.items())),
     }
+
+
+def export_entry(item: dict) -> dict:
+    exported = {key: value for key, value in item.items() if not key.startswith("_")}
+    exported["validation_status"] = "valid" if not item.get("_issues") else "invalid"
+    exported["issue_count"] = len(item.get("_issues", []))
+    exported["issues"] = item.get("_issues", [])
+    return exported
+
+
+def render_markdown(result: object) -> str:
+    if isinstance(result, dict):
+        lines = ["# Catalog Summary", ""]
+        for key in ("records", "valid_records", "invalid_records"):
+            if key in result:
+                lines.append(f"- {key.replace('_', ' ').title()}: {result[key]}")
+        for section in ("categories", "statuses", "issue_types"):
+            values = result.get(section, {})
+            lines.extend(["", f"## {section.replace('_', ' ').title()}", "", "| Value | Count |", "|---|---:|"])
+            lines.extend(f"| {name} | {count} |" for name, count in sorted(values.items()))
+        return "\n".join(lines) + "\n"
+
+    if not isinstance(result, list):
+        raise ValueError("Markdown output requires a result list or summary object")
+    lines = [
+        "# Catalog Results",
+        "",
+        "| ID | English name | Publisher | Category | Status | Validation | Issues |",
+        "|---|---|---|---|---|---|---:|",
+    ]
+    for item in result:
+        exported = export_entry(item)
+        values = [
+            exported.get("id", ""),
+            exported.get("name_en", ""),
+            exported.get("publisher", ""),
+            exported.get("category", ""),
+            exported.get("status", ""),
+            exported.get("validation_status", ""),
+            exported.get("issue_count", 0),
+        ]
+        escaped = [str(value).replace("|", "\\|").replace("\n", " ") for value in values]
+        lines.append("| " + " | ".join(escaped) + " |")
+    return "\n".join(lines) + "\n"
+
+
+def write_output(result: object, path: str | None, output_format: str) -> str:
+    if output_format == "json":
+        content = json.dumps(
+            [export_entry(item) for item in result] if isinstance(result, list) else result,
+            ensure_ascii=False,
+            indent=2,
+        ) + "\n"
+    elif output_format == "markdown":
+        content = render_markdown(result)
+    elif output_format == "csv":
+        if not isinstance(result, list):
+            raise ValueError("CSV output is available for catalog records, not summaries")
+        if not path:
+            raise ValueError("CSV output requires --output")
+        with Path(path).open("w", encoding="utf-8", newline="") as handle:
+            writer = csv.DictWriter(handle, fieldnames=EXPORT_FIELDS)
+            writer.writeheader()
+            for item in result:
+                exported = export_entry(item)
+                writer.writerow({
+                    field: ";".join(exported.get(field, [])) if field == "tags" and isinstance(exported.get(field), list) else exported.get(field, "")
+                    for field in EXPORT_FIELDS
+                })
+        return ""
+    else:
+        raise ValueError(f"Unsupported output format: {output_format}")
+
+    if path:
+        Path(path).write_text(content, encoding="utf-8")
+    return content
 
 
 def main() -> None:
@@ -119,10 +216,14 @@ def main() -> None:
     parser.add_argument("--status")
     parser.add_argument("--valid-only", action="store_true")
     parser.add_argument("--summary", action="store_true")
+    parser.add_argument("--format", choices=("json", "csv", "markdown"), default="json")
+    parser.add_argument("-o", "--output")
     args = parser.parse_args()
     rows = load_catalog(args.catalog)
     result = catalog_summary(rows) if args.summary else search(rows, args.query, args.category, args.status, args.valid_only)
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+    content = write_output(result, args.output, args.format)
+    if not args.output and content:
+        print(content, end="")
 
 
 if __name__ == "__main__":
