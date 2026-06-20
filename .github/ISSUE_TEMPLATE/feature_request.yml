@@ -1,0 +1,68 @@
+name: Feature request
+description: Propose a catalog field, vocabulary, validation, search, export, or source-review improvement
+title: "[Feature]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Proposals must preserve the metadata-only boundary, source evidence, stable identifiers, and clear separation between declared terms and review conclusions.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Feature area
+      options:
+        - Catalog field
+        - Category vocabulary
+        - Lifecycle status
+        - Validation rule
+        - Duplicate detection
+        - Search and filtering
+        - Catalog summary
+        - Export format
+        - Source verification workflow
+        - Contributor experience
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Metadata problem
+      description: Describe the discovery, review, or lifecycle problem.
+    validations:
+      required: true
+  - type: textarea
+    id: record
+    attributes:
+      label: Proposed synthetic record
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: rules
+    attributes:
+      label: Validation, vocabulary, or search behavior
+    validations:
+      required: true
+  - type: textarea
+    id: migration
+    attributes:
+      label: Existing-record and compatibility impact
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+    validations:
+      required: true
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Catalog-boundary checks
+      options:
+        - label: The proposal stores metadata rather than copied source datasets.
+          required: true
+        - label: Source evidence and review dates remain visible.
+          required: true
+        - label: Declared source terms remain separate from reuse conclusions.
+          required: true
