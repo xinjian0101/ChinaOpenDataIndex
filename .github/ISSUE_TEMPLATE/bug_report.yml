@@ -1,0 +1,67 @@
+name: Bug report
+description: Report a reproducible catalog loading, validation, search, summary, or export defect
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use synthetic metadata. Do not attach copied datasets, credentials, or private source records.
+  - type: input
+    id: version
+    attributes:
+      label: Commit or version
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - JSONL loading
+        - Required-field validation
+        - Category validation
+        - Lifecycle validation
+        - Duplicate ID detection
+        - Search and filters
+        - Catalog summary
+        - JSON export
+        - CSV export
+        - Markdown export
+        - Documentation
+    validations:
+      required: true
+  - type: textarea
+    id: record
+    attributes:
+      label: Minimal synthetic catalog record
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Reproduction command
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submission checks
+      options:
+        - label: The example is synthetic and contains metadata only.
+          required: true
+        - label: I separated declared source terms from my review conclusion.
+          required: true
