@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use ChinaOpenDataIndex, cite this repository and the exact commit used."
+title: "ChinaOpenDataIndex"
+type: software
+authors:
+  - name: "xinjian0101"
+repository-code: "https://github.com/xinjian0101/ChinaOpenDataIndex"
+url: "https://github.com/xinjian0101/ChinaOpenDataIndex/blob/main/ABOUT.md"
+license: MIT
+keywords:
+  - open data
+  - metadata catalog
+  - public data
+  - bilingual metadata
+  - data discovery
+abstract: "A reviewable bilingual metadata catalog for public-data discovery, validation, source tracking, and lifecycle management."
